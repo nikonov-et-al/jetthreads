@@ -33,9 +33,10 @@ y_3 = []
 fig, ax = plt.subplots(figsize = (10, 7),dpi = 150)
 
 lims = 0
+zoom = 0
 
 def main_plot(ax = ax):
-    global lims
+    global lims, zoom
     global x_1, x_2, x_3, y_1, y_2, y_3 
 
     ax.scatter(x_1, y_1, marker = '.', lw = 1, label = 'No 1')
@@ -45,8 +46,8 @@ def main_plot(ax = ax):
         ax.scatter(x_3, y_3, marker = '.', lw = 1, label = 'No 3')
     
     ax.set_aspect('equal')
-    ax.set_ylim(-25,25)
-    ax.set_xlim(-20 + lims, 100 + lims)
+    ax.set_ylim(-25 - zoom, 25 + zoom)
+    ax.set_xlim(-10 + lims - 2*zoom, 90 + lims + 2*zoom)
     ax.set_ylabel('Transverse offset (mas)')
     ax.set_xlabel('Distance along jet (mas)')
     ax.set_title('Space-Ground 3-Gaussian quasi-manual approach.')
@@ -66,7 +67,7 @@ def select(event):
     global coords
     global fig, ax
     global thread_num
-
+    global selected_x, selected_y
     #print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
     #          ('double' if event.dblclick else 'single', event.button,
     #event.x, event.y, event.xdata, event.ydata))
@@ -99,14 +100,17 @@ def select(event):
                 if y_vals[i] > xy[1] and y_vals[i] < xy_max[1]:
                     selected_x.append(x_vals[i])
                     selected_y.append(y_vals[i])
-            for i in range(len(selected_x)):
-                x_1.remove(selected_x[i])
-                y_1.remove(selected_y[i])
+            #for i in range(len(selected_x)):
+            #    x_1.remove(selected_x[i])
+            #    y_1.remove(selected_y[i])
 
         if len(coords) >= 4:
             coords = []
+            selected_x = []
+            selected_y = []
             plt.cla()
             main_plot()
+            ax.scatter(event.xdata, event.ydata, marker = '+')
         coords.extend([event.xdata, event.ydata])
           
 
@@ -115,8 +119,9 @@ def keyboard(event):
     global selected_x
     global selected_y
     global selection
-    global lims 
+    global lims, zoom 
     global thread_num
+    
 
     if event.key == ' ':
         print('The Selection was started.')
@@ -137,6 +142,9 @@ def keyboard(event):
         elif thread_num == 3:
             x_3.extend(selected_x)
             y_3.extend(selected_y)
+        for i in range(len(selected_x)):
+            x_1.remove(selected_x[i])
+            y_1.remove(selected_y[i])
 
         plt.cla()
         main_plot()
@@ -153,11 +161,20 @@ def keyboard(event):
     
     if event.key == 'right':
         plt.cla()
-        lims = lims + 30
+        lims = lims + 10
         main_plot()
     if event.key == 'left':
         plt.cla()
-        lims = lims - 30
+        lims = lims - 10
+        main_plot()
+
+    if event.key == '+':
+        plt.cla()
+        zoom = zoom - 10
+        main_plot()
+    elif event.key == '-':
+        plt.cla()
+        zoom = zoom + 10
         main_plot()
 
     if event.key == 'e':
