@@ -17,10 +17,6 @@ y_3 = data_3['arr_1'] + 3
 def sinf(x, a, b, c):
     return a*np.sin((2*np.pi / b )*x*(1/x)**(0.56) + c) * (x/1)**(0.56)
 
-def helix(x, a, b, c):
-    theta = np.deg2rad(20)
-    x = a  *np.cos((2*np.pi / b )*x + c) * np.cos(theta) - a * x *np.sin(theta) 
-    return a*np.sin((2*np.pi / b )*x + c) 
 
 popt_1, pcov_1 = curve_fit(sinf, x_1[50:], y_1[50:], 
                     p0 = [0.36, 5.8, np.deg2rad(250)],
