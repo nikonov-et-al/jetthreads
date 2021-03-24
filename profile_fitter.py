@@ -138,12 +138,23 @@ def num2str1000(i, n_max):
 
 ### Functions ###
 
-filename = input('Specify the name of files contained slices like '+
-                    '<<slices*.dat>> (All filenames should contain a profile number, default *dat): \n')
-if filename == '':
-    filename = '*dat'
 
-frame_max = len(glob.glob(filename)) - 1
+while 1:
+
+    keyword = input('Specify the name of files contained slices like '+
+                        '<<slices*.dat>> (All filenames should contain a profile number, default *dat): \n')
+    if keyword == '':
+        keyword = '*dat'
+
+    file_dirs = glob.glob(keyword)
+    frame_max = len(file_dirs) - 1
+    
+    if frame_max > -1:
+        file_key = file_dirs[0][:-8]
+        break
+    else:
+        print('Error: Files are not found. If files located in a folder in the same directory, enter path e.g. profiles/*dat\n')
+
 
 im_scale = 0.15
 
@@ -159,6 +170,7 @@ def main_loop(step):
     global n_gauss
     global n_gauss_prev
     global im_scale
+    global file_key
 
     manual_fit = False
 
@@ -167,8 +179,8 @@ def main_loop(step):
         os.mkdir(foldername)
     
     frame = frame + step
-    #print(frame,step)
-    filename = 'space_slice_' + num2str1000(frame, frame_max) + '.dat'
+    print()
+    filename = file_key + num2str1000(frame, frame_max) + '.dat'
     profile_number = filename[-8:-4]
     profile = np.genfromtxt(filename)
     profile_len = len(profile)
